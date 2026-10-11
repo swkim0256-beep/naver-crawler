@@ -25,10 +25,7 @@ jobs:
 
       - name: 크롤러 실행
         run: python collector.py
-
-      - name: 최신 데이터 기반 프롬프트 자동 생성
-        run: python generate_prompt.py
-
+        
       - name: 결과 파일 저장소에 자동 커밋
         run: |
           git config --global user.name "github-actions[bot]"
