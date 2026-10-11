@@ -1,0 +1,42 @@
+name: Daily Mobile News Crawler
+
+on:
+  schedule:
+    # 매일 한국 시간(KST) 오전 9시 자동 실행
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 웹에서 수동으로 '실행' 버튼을 눌러 테스트할 수 있도록 지원
+
+permissions:
+  contents: write
+
+jobs:
+  crawl-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v4
+
+      - name: 파이썬 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 필수 라이브러리 설치
+        run: |
+          pip install requests beautifulsoup4 pandas
+
+      - name: 크롤러 실행
+        run: |
+          python crawler.py
+
+      - name: 새로 수집된 CSV 파일 커밋 및 저장
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add curated_titles_all.csv curated_titles_optimal_22_30.csv
+          if git diff --staged --quiet; then
+            echo "새로 변경된 데이터가 없습니다."
+          else
+            git commit -m "data: 모바일 홈판 타이틀 자동 수집 ($(date +'%Y-%m-%d'))"
+            git push
+          fi
