@@ -2,7 +2,7 @@ name: Naver Feed Auto Collector
 
 on:
   schedule:
-    # 2시간마다 실행 (UTC 기준)
+    # 2시간마다 자동 실행 (UTC 기준)
     - cron: '0 */2 * * *'
   workflow_dispatch: # 수동 실행 버튼
 
@@ -25,11 +25,11 @@ jobs:
 
       - name: 크롤러 실행
         run: python collector.py
-        
+
       - name: 결과 파일 저장소에 자동 커밋
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add naver_titles.csv prompt_result.txt || exit 0
-          git commit -m "chore: update titles and prompt [skip ci]" || exit 0
+          git add naver_titles.csv
+          git commit -m "chore: update naver titles [skip ci]" || exit 0
           git push
